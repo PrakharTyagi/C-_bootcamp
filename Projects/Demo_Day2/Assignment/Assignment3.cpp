@@ -1,5 +1,5 @@
-// A complete working C++ program to delete
-// a node in a linked list at a given position
+// Add in front of list,add at a given index,delete the the node,delete node at a given index ,printlist,reverse list and delete whole list. 
+// 
 #include <iostream>
 using namespace std;
 
