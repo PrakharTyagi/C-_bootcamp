@@ -11,7 +11,7 @@ while(1)
 {
     int guess = (high + low)/2;//testing
     char a;
-    std::cout <<"Is your testing secret number "<<guess<< " ?"<< std::endl;
+    std::cout <<"Is your testing second secret number "<<guess<< " ?"<< std::endl;
     std::cout <<"Enter 'h' to indicate the guess is too high. Enter 'l' to indicate the guess is too low. Enter 'c' to indicate I guessed correctly."<< std::endl;
     ++count;
     std::cout<<"count is "<< count<<std::endl;
