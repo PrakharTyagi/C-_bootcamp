@@ -4,7 +4,7 @@
 int main() {
 std::cout << "Please think of the number between 0 and 100!"<< std::endl;
 int low = 0;
-int high = 100;
+int high = 128;
     int count = 0;
 
 while(1)
