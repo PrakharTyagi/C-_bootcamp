@@ -32,7 +32,7 @@ int main (int argc, char * const argv[]) {
 	 *       X
 	 *        0  1  2   3  4  5   6  7  8
 	 *      -------------------------------
-	 * Y 0  | .  .  . | .  .  . | .  .  . |
+	//  * Y 0  | .  .  . | .  .  . | .  .  . |
 	 *   1  | .  .  . | .  .  . | .  .  . |
 	 *   2  | .  .  . | .  .  . | .  .  . |
 	 *      -------------------------------
@@ -49,11 +49,11 @@ int main (int argc, char * const argv[]) {
 	
 
 
-    std::cout << "The s/u/d/o/k/o is a game played in nxn matrix  dimension" << std::endl;
-	std::cout << "This code just works for 9x9" << std::endl;
+    
 	SudokuPuzzle puzzle;
+	puzzle.welcome();
 	std::vector<std::vector<int>> get2DVector(int , std::string );
-	auto vec = get2DVector(9, "Hard.txt");// Easy input file
+	auto vec = get2DVector(9,"Hard.txt");// Easy input file
 
 	for (size_t i = 0; i < vec.size(); i++)
 {

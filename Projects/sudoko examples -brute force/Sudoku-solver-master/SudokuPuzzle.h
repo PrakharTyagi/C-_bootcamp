@@ -40,6 +40,7 @@ class SudokuPuzzle {
 	// Solve the puzzle. Returns true if in solved state, returns false if unsolvable.
 	bool solve();
 	
+	void welcome();
 };
 
 #endif

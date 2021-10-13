@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <ctime>
 
 /*
  * Constructor. Initializes puzzle board to zeros, which signify that a value
@@ -304,7 +305,34 @@ void SudokuPuzzle::printTracerTryingValue(int x_cord, int y_cord) {
 	std::cout << "Trying value " << board[x_cord][y_cord] << " at board[" << x_cord << "][" << y_cord << "]" << std::endl;
   }
   
-} // SudokuPuzzle::printTracerTryingValue
+} 
+
+void SudokuPuzzle::welcome(){
+	printf("----------------------------------------------------\n");
+	printf("|===================== SUDOKU =====================|\n");
+	printf("|                                                  |\n");
+	printf("|             Welcome to Sudoku Solver             |\n");
+	printf("|                                                  |\n");
+	printf("----------------------------------------------------\n\n\n");
+
+	printf("----------------------------------------------------\n");
+	printf("|================== About Sudoku ==================|\n");
+	printf("----------------------------------------------------\n");
+	printf("|                                                  |\n");
+	printf("| 1. Board of Sudoku is of size nxn, where n should|\n");
+	printf("|    be a perfect square.                          |\n");
+	printf("| 2. In each row of length n all numbers from 1 to |\n");
+	printf("|    n should be present once.                     |\n");
+	printf("| 3. In each column of length n all numbers from   |\n");
+	printf("|    1 to n should be present once.                |\n");
+	printf("| 4. In each sub-square of size n(or of side length|\n");
+	printf("|    sqrt(n)) all numbers from 1 to n should be    |\n");
+	printf("|    present once.                                 |\n");
+	printf("----------------------------------------------------\n\n");
+
+}
+
+// SudokuPuzzle::printTracerTryingValue
 
 // void SudokuPuzzle::input(){
 // 		std::vector<std::vector<int>> get2DVector(int n, std::string filename)
