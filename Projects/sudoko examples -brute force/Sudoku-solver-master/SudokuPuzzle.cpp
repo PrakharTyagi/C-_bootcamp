@@ -1,10 +1,8 @@
 #include "SudokuPuzzle.h"
 #include <iostream>
 #include <vector>
-#include <string>
-#include <sstream>
-#include <fstream>
-#include <ctime>
+#include <algorithm>
+#include<cmath>
 
 /*
  * Constructor. Initializes puzzle board to zeros, which signify that a value
@@ -172,9 +170,14 @@ bool SudokuPuzzle::solve(int x_cord, int y_cord) {
   
   // There isn't a value already for position.
   // Guess all the values until one works
-  for (int val=1; val<10; val++) {
+// check possiblity value hypthesis like 4567  then check if then verify on those set if yes or check for next hypothesis. 
+	int vset[] ={1,2,3,4,5,6,7,8,9};
+  for (int i=0; i<9; i++) {
 	
-	setBoardValue(x_cord, y_cord, val);
+	setBoardValue(x_cord, y_cord, vset[i]);
+
+	//printTracerTryingValue(x_cord, y_cord);
+
 	
 	// If value works, on to next
     if (verifyValue(x_cord,y_cord)) {
@@ -200,7 +203,7 @@ bool SudokuPuzzle::solve(int x_cord, int y_cord) {
 		  return true;
 		}
 	}
-  }
+  }//
   
   // Remove value. Going to backtrack. If value remained,
   // then would think its part of solution.
@@ -228,7 +231,6 @@ bool SudokuPuzzle::solve(int x_cord, int y_cord) {
 bool SudokuPuzzle::verifyValue(int x_cord, int y_cord) {
 
   printTracerTryingValue(x_cord, y_cord);
-
   int value = board[x_cord][y_cord];
 
   // Make sure no vertical collision
@@ -296,7 +298,7 @@ bool SudokuPuzzle::verifyValue(int x_cord, int y_cord) {
  *           and 8, inclusive.
  */
 void SudokuPuzzle::printTracerTryingValue(int x_cord, int y_cord) {
-  if (debug) {
+  if (true) {//change debug to true
     // Indent for easier reading
 	for (int i=0; i<x_cord+y_cord; i++) {
 	  std::cout << " ";
@@ -331,6 +333,194 @@ void SudokuPuzzle::welcome(){
 	printf("----------------------------------------------------\n\n");
 
 }
+
+bool SudokuPuzzle::solve_kernel()
+{
+	if(_solved)
+	{
+		return _solved;
+	}
+
+	if (checkIfAllFilled(_board))   // base case
+    {
+        _solved = true;
+		_solution = _board;
+		return _solved;
+    }
+	Position empty_cell_pos = find_empty(_board);
+	int row = empty_cell_pos.first;
+	int col = empty_cell_pos.second;
+	for (int num = _board.get_min_value(); num <= _board.get_max_value(); ++num)
+	{	
+		if (isValid(_board, num, empty_cell_pos))
+		{
+			_board.set_board_data(row, col, num);
+			if (isUnique(_board, num, empty_cell_pos)) 
+			{ num = _board.get_board_size() + 1; 
+			}
+			// try the next cell in recusression
+			if (solve_kernel()) 
+			{ _solved = true; return _solved;
+			 }
+			else { 
+				_board.set_board_data(row, col, _board.get_empty_cell_value());
+				 }  
+				 	}
+	}
+	_recursionDepth++;
+		// None of the values solved the Sudoku
+	_solved = false;
+	return _solved;
+}// Last in first out
+
+bool SudokuPuzzle::checkIfAllFilled(const SudokuBoard& board) const
+{
+    for (int i = 0; i < board.get_board_size(); ++i)
+	{
+        for (int j = 0; j < board.get_board_size(); ++j)
+		{
+            if (isEmpty(board, i, j))
+			{
+                return false;
+			}
+        }
+    }
+    return true;
+}
+
+bool SudokuPuzzle::isEmpty(const SudokuBoard& board, int i, int j) const
+{
+	 if(board.at(i, j) == board._EMPTY_CELL_VALUE){
+		 return true;
+	}else{return false;
+	}
+}
+const std::pair<int, int> SudokuPuzzle::find_empty(const SudokuBoard& board)
+{
+	Position empty_cell;
+	bool stop = false;
+
+	for (int i = 0; i < board.get_board_size(); ++i)
+	{
+		for (int j = 0; j < board.get_board_size(); ++j)
+		{
+			if (isEmpty(board, i, j))
+			{
+				empty_cell = std::make_pair(i, j);
+				stop = true;
+				break;
+			}
+		}
+		if (stop) { break; }
+	}
+	
+	return empty_cell;  // (row, col)
+}
+
+bool SudokuPuzzle::isValid(const SudokuBoard& board, int num, Position pos) const
+{
+    return isValidRow(board, num, pos) && isValidColumn(board, num, pos) && isValidBox(board, num, pos);
+}
+
+bool SudokuPuzzle::isValidRow(const SudokuBoard& board, int num, Position pos) const
+{
+    for (int i = 0; i < board.get_board_size(); ++i)
+	{
+        if ( (i != pos.second) && (board.at(pos.first, i) == num) ) { return false; }
+	}
+
+	return true;
+}
+
+bool SudokuPuzzle::isValidColumn(const SudokuBoard& board, int num, Position pos) const
+{
+	for (int i = 0; i < board.get_board_size(); ++i)
+	{
+        if ( (i != pos.first) && (board.at(i, pos.second) == num) ) { return false; }
+	}
+	
+	return true;
+}
+
+bool SudokuPuzzle::isValidBox(const SudokuBoard& board, int num, Position pos) const
+{
+	int BOX_SIZE = board.get_box_size();
+
+	int box_x = std::floor(pos.first / board.get_box_size());
+    int box_y = std::floor(pos.second / board.get_box_size());
+
+    for (int i = box_x * BOX_SIZE; i < box_x * BOX_SIZE + BOX_SIZE; ++i)
+	{
+        for (int j = box_y * BOX_SIZE; j < box_y * BOX_SIZE + BOX_SIZE; ++j)
+		{
+            if ( (i != pos.first && j != pos.second) && (board.at(i, j) == num) ) { return false; }
+        }
+    }
+
+	return true;
+}
+
+bool SudokuPuzzle::isUnique(const SudokuBoard& board, int num, Position pos) const
+{
+	int local_row = pos.first % board.get_box_size();
+	int local_col = pos.second % board.get_box_size();
+
+	int box_x = std::floor(pos.first / board.get_box_size());
+    int box_y = std::floor(pos.second / board.get_box_size());
+
+	for (int i = ( (local_row == 0) ? 1 : 0 ); i < board.get_box_size(); ++i)
+	{
+		if (i == local_row) { continue; }
+		std::vector<int> numbersInRow = board.getNumbersInRow(box_x * board.get_box_size() + i);
+		if (std::find(numbersInRow.begin(), numbersInRow.end(), num) == numbersInRow.end())
+		{
+			return false;
+		}
+	}
+
+	for (int j = ( (local_col == 0) ? 1 : 0 ); j < board.get_box_size(); ++j)
+	{
+		if (j == local_col) { continue; }
+		std::vector<int> numbersInCol = board.getNumbersInCol(box_y * board.get_box_size() + j);
+		if (std::find(numbersInCol.begin(), numbersInCol.end(), num) == numbersInCol.end())
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+std::vector<int> SudokuBoard::getNumbersInRow(int indexOfRows) const
+{
+	std::vector<int> numbersInRow;
+
+	for (int col = 0; col < _BOARD_SIZE; ++col)
+	{
+		int num = _board_data[indexOfRows][col];
+		if (num == _EMPTY_CELL_VALUE) continue;
+		numbersInRow.push_back(num);
+	}
+
+	return numbersInRow;
+}
+std::vector<int> SudokuBoard::getNumbersInCol(int indexOfColumns) const
+{
+	std::vector<int> numbersInCol;
+
+	for (int row = 0; row < _BOARD_SIZE; ++row)
+	{
+		int num = _board_data[row][indexOfColumns];
+		if (num == _EMPTY_CELL_VALUE) continue;
+		numbersInCol.push_back(num);
+	}
+
+	return numbersInCol;
+}
+
+// bool SudokuPuzzle::eliminate(int x_cord, int y_cord,int val) {
+// 	if()
+// }
 
 // SudokuPuzzle::printTracerTryingValue
 
