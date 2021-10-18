@@ -21,19 +21,14 @@ using CoverMatrix = std::vector<std::vector<int>>;
 
 class SudokuBoard
 {
-	friend class SudokuSolver;
-	friend class SudokuTest;
+	friend class SudokuPuzzle;
+
 
 private:
 	
 
 public:
-	// Returns a 2D vector reading from a file containing the initial Sudoku board in space separated format
-	// (empty cells are represented by 0s)
-	const Board read_input(const std::string& filename);
-    	// Writes solution to a text file (solution.txt)
-	friend void write_output(const SudokuBoard& solutionBoard);
-SudokuBoard() = default;
+    SudokuBoard() = default;
 	SudokuBoard(const std::string& filename);
 	// copy constructor
 	SudokuBoard(const SudokuBoard& anotherSudokuBoard);

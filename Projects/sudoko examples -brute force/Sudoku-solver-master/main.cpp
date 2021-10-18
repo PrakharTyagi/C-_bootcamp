@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 #include "SudokuPuzzle.h"
+#include "SudokuBoard.hpp"
 
 
 
@@ -49,6 +50,8 @@ std::chrono::high_resolution_clock::time_point start, stop;
 start = std::chrono::high_resolution_clock::now();
 
 	SudokuPuzzle puzzle;
+	//auto puzzle = SudokuBoard();
+	
 	puzzle.welcome();
 	std::vector<std::vector<int>> get2DVector(int , std::string );
 	auto vec = get2DVector(9,"Hard.txt");// Easy input file
@@ -63,7 +66,6 @@ start = std::chrono::high_resolution_clock::now();
 }
 	// Print the board before solving.
 	puzzle.print();
-
 	//
 	
 	

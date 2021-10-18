@@ -518,6 +518,19 @@ std::vector<int> SudokuBoard::getNumbersInCol(int indexOfColumns) const
 	return numbersInCol;
 }
 
+SudokuBoard::SudokuBoard(const SudokuBoard& anotherSudokuBoard)
+	: _board_data(anotherSudokuBoard._board_data),
+	  _BOX_SIZE(anotherSudokuBoard._BOX_SIZE),
+	  _BOARD_SIZE(anotherSudokuBoard._BOARD_SIZE),
+	  _MIN_VALUE(anotherSudokuBoard._MIN_VALUE),
+	  _MAX_VALUE(anotherSudokuBoard._MAX_VALUE),
+	  _NUM_CONSTRAINTS(anotherSudokuBoard._NUM_CONSTRAINTS),
+	  _INIT_NUM_EMPTY_CELLS(anotherSudokuBoard._INIT_NUM_EMPTY_CELLS),
+	  _EMPTY_CELL_VALUE(anotherSudokuBoard._EMPTY_CELL_VALUE),
+	  _EMPTY_CELL_CHARACTER(anotherSudokuBoard._EMPTY_CELL_CHARACTER),
+	  _COVER_MATRIX_START_INDEX(anotherSudokuBoard._COVER_MATRIX_START_INDEX)
+{ }
+
 // bool SudokuPuzzle::eliminate(int x_cord, int y_cord,int val) {
 // 	if()
 // }
