@@ -21,6 +21,8 @@ DEPENDENCIES = \
 	./src/SudokuTest.cpp \
 	./src/SudokuPuzzle.cpp \
 	./src/SudokuPuzzle_backtracking.cpp \
+	./src/SudokuPuzzle_bruteforce.cpp \
+
 
 all: $(TARGETS)
 

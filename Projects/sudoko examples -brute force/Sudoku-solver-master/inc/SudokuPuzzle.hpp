@@ -6,6 +6,7 @@ using Position = std::pair<int, int>;
 enum class MODES
 {
 	SEQUENTIAL_BACKTRACKING,     // Sequential mode using backtracking algorithm
+	SEQUENTIAL_BRUTEFORCE,     // Sequential mode using bruteforce algorithm
 };
 class SudokuPuzzle {
 	protected:

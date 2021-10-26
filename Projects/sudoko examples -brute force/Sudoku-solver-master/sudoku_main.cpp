@@ -9,16 +9,21 @@
 #include "SudokuTest.hpp"
 #include "SudokuPuzzle.hpp"
 #include "SudokuPuzzle_backtracking.h"
+#include "SudokuPuzzle_BruteForce.hpp"
 
 std::unique_ptr<SudokuPuzzle> CreateSudokuSolver(MODES mode, SudokuBoard& board)
 {	switch (mode)
-	{case MODES::SEQUENTIAL_BACKTRACKING:
-		return std::make_unique<SudokuPuzzle_Backtracking>(board);
+	{		case MODES::SEQUENTIAL_BACKTRACKING:
+			return std::make_unique<SudokuPuzzle_Backtracking>(board);
+	        case MODES::SEQUENTIAL_BRUTEFORCE:
+            return std::make_unique<SudokuPuzzle_Bruteforce>(board);
 
 	
 	default:
 		std::cerr << termcolor::red << "Available options for <MODE>: " << "\n";
 		std::cerr << "		- 0: sequential mode with backtracking algorithm" << "\n";
+		std::cerr << "		- 1: sequential mode with brute force algorithm" << "\n";
+
 		std::cerr << "Please try again." << termcolor::reset << "\n";
 		//exit(-1);
 	}
