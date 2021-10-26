@@ -15,10 +15,10 @@ do
   cd "${repo}"
   git pull --rebase
   echo "******************************************"
+    git diff --name-only
     cd Demo_Day1
     cd Assignment
     utput=$(g++ Assignment3.cpp)
-  # utput=$(g++ $Assignment3.cpp -o Assignment3)
    echo "**********Compilation successfull**************"
 if [[ $? != 0 ]]; then
     # There was an error, display the error in $output

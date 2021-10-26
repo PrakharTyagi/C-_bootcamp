@@ -1,0 +1,251 @@
+#include "SudokuBoard.hpp"
+#include <cmath>
+#include <fstream>
+#include <vector>
+#include <iostream>
+#include "termcolor.hpp"
+#include <iomanip>
+#include "helper.hpp"
+
+
+const Board SudokuBoard::read_input(const std::string& filename)
+{
+	std::ifstream inputFile(filename);   // open file
+
+	if (!inputFile)
+	{
+		std::cerr << termcolor::red << "Error opening file " << filename
+		          << "! Please make sure the file specified exists." << termcolor::reset << "\n";
+		exit(1);
+	}
+	
+	inputFile >> _BOARD_SIZE;
+	_BOX_SIZE = std::sqrt(_BOARD_SIZE);
+
+	Board sudokuBoard(_BOARD_SIZE, std::vector<int>(_BOARD_SIZE, 0));
+
+	int num_empty_cells = 0;
+	for (int row = 0; row < _BOARD_SIZE; ++row)
+	{
+		for (int col = 0; col < _BOARD_SIZE; ++col)
+		{
+			int value;
+			inputFile >> value;
+			sudokuBoard[row][col] = value;
+			num_empty_cells += (value == 0);
+		}
+	}
+	_INIT_NUM_EMPTY_CELLS = num_empty_cells;
+	
+	inputFile.close();   // close file
+
+	return sudokuBoard;
+}
+
+void write_output(const SudokuBoard& solutionBoard)
+{
+	Board solution = solutionBoard.get_board_data();
+	int BOARD_SIZE = solutionBoard.get_board_size();
+	int BOX_SIZE = solutionBoard.get_box_size();
+
+	std::ofstream outputFile("solution.txt");
+
+    int digit = log10(BOARD_SIZE) + 1;
+
+    for (int r = 0; r < BOARD_SIZE; ++r)
+	{
+        for (int c = 0; c < BOARD_SIZE; ++c)
+		{
+			outputFile << std::setw(digit) << solution[r][c];
+
+			if (c != BOARD_SIZE - 1)
+			{
+				outputFile << " ";
+			}
+
+			if (c % BOX_SIZE == (BOX_SIZE - 1))
+			{
+				if (c != BOARD_SIZE - 1)
+				{
+					outputFile << "  ";
+				}
+			}
+		}
+		
+		if (r != BOARD_SIZE - 1)
+		{
+			outputFile << "\n";
+			if (r % BOX_SIZE == (BOX_SIZE - 1))
+			{
+				outputFile << "\n";
+			}
+		}
+    }
+
+	outputFile.close();
+}
+
+SudokuBoard::SudokuBoard(const std::string& filename)
+	: _board_data(read_input(filename))
+{
+	std::cout << "Load the initial Sudoku board from "
+	          << termcolor::yellow << filename << termcolor::reset << "..." << "\n";
+}
+
+SudokuBoard::SudokuBoard(const SudokuBoard& anotherSudokuBoard)
+	: _board_data(anotherSudokuBoard._board_data),
+	  _BOX_SIZE(anotherSudokuBoard._BOX_SIZE),
+	  _BOARD_SIZE(anotherSudokuBoard._BOARD_SIZE),
+	  _MIN_VALUE(anotherSudokuBoard._MIN_VALUE),
+	  _MAX_VALUE(anotherSudokuBoard._MAX_VALUE),
+	  _NUM_CONSTRAINTS(anotherSudokuBoard._NUM_CONSTRAINTS),
+	  _INIT_NUM_EMPTY_CELLS(anotherSudokuBoard._INIT_NUM_EMPTY_CELLS),
+	  _EMPTY_CELL_VALUE(anotherSudokuBoard._EMPTY_CELL_VALUE),
+	  _EMPTY_CELL_CHARACTER(anotherSudokuBoard._EMPTY_CELL_CHARACTER),
+	  _COVER_MATRIX_START_INDEX(anotherSudokuBoard._COVER_MATRIX_START_INDEX)
+{ }
+
+int SudokuBoard::get_num_total_cells() const
+{
+	return _BOARD_SIZE * _BOARD_SIZE;
+}
+
+int SudokuBoard::get_num_empty_cells() const
+{
+	int n = 0;
+    for (int i = 0; i < _BOARD_SIZE; ++i)
+	{
+		for (int j = 0; j < _BOARD_SIZE; ++j)
+		{
+			n += (this->at(i, j) == get_empty_cell_value());
+		}
+	}
+    return n;
+}
+
+std::vector<int> SudokuBoard::getNumbersInRow(int indexOfRows) const
+{
+	std::vector<int> numbersInRow;
+
+	for (int col = 0; col < _BOARD_SIZE; ++col)
+	{
+		int num = _board_data[indexOfRows][col];
+		if (num == _EMPTY_CELL_VALUE) continue;
+		numbersInRow.push_back(num);
+	}
+
+	return numbersInRow;
+}
+
+std::vector<int> SudokuBoard::getNumbersInCol(int indexOfColumns) const
+{
+	std::vector<int> numbersInCol;
+
+	for (int row = 0; row < _BOARD_SIZE; ++row)
+	{
+		int num = _board_data[row][indexOfColumns];
+		if (num == _EMPTY_CELL_VALUE) continue;
+		numbersInCol.push_back(num);
+	}
+
+	return numbersInCol;
+}
+
+SudokuBoard& SudokuBoard::operator= (const SudokuBoard& anotherSudokuBoard)
+{
+	if (this != &anotherSudokuBoard)
+	{
+		_board_data = anotherSudokuBoard._board_data;
+		_BOX_SIZE = anotherSudokuBoard._BOX_SIZE;
+		_BOARD_SIZE = anotherSudokuBoard._BOARD_SIZE;
+		_MIN_VALUE = anotherSudokuBoard._MIN_VALUE;
+		_MAX_VALUE = anotherSudokuBoard._MAX_VALUE;
+		_NUM_CONSTRAINTS = anotherSudokuBoard._NUM_CONSTRAINTS;
+		_INIT_NUM_EMPTY_CELLS = anotherSudokuBoard._INIT_NUM_EMPTY_CELLS;
+		_EMPTY_CELL_VALUE = anotherSudokuBoard._EMPTY_CELL_VALUE;
+		_EMPTY_CELL_CHARACTER = anotherSudokuBoard._EMPTY_CELL_CHARACTER;
+		_COVER_MATRIX_START_INDEX = anotherSudokuBoard._COVER_MATRIX_START_INDEX;
+	}
+
+	return *this;
+}
+
+void print_board(const SudokuBoard& board)
+{
+	Board grid = board._board_data;
+	std::cout << "board size is"<<board._BOARD_SIZE<< std::endl;
+
+	for (int i = 0; i < board._BOARD_SIZE; ++i)
+	{
+		if (i % board._BOX_SIZE == 0 && i != 0)
+		{
+			std::string s1 = "---";
+			std::string s2 = s1 * board._BOX_SIZE + " + ";
+            std::cout << s2 * (board._BOX_SIZE - 1) << s1 * board._BOX_SIZE << "\n";
+		}
+
+        for (int j = 0; j < board._BOARD_SIZE; ++j)
+		{
+			if (j % board._BOX_SIZE == 0 && j != 0)
+			{
+                std::cout << "  | ";
+			}	
+
+            if (j == board._BOARD_SIZE - 1)
+			{
+                std::cout << std::setfill(' ') << std::setw(2) << grid[i][j] << "\n";
+			}
+			else if (j % board._BOX_SIZE == board._BOX_SIZE - 1)
+			{
+				std::cout << std::setfill(' ') << std::setw(2) << grid[i][j];
+			}
+			else
+			{
+                std::cout << std::setfill(' ') << std::setw(2) << grid[i][j] << " ";
+			}
+		}
+	}
+}
+std::ostream& operator<< (std::ostream &out, const SudokuBoard& board)
+{
+	Board grid = board.get_board_data();
+	int BOARD_SIZE = board.get_board_size();
+	int BOX_SIZE = board.get_box_size();
+	int EMPTY_CELL_VALUE = board.get_empty_cell_value();
+	std::string EMPTY_CELL_CHARACTER = board.get_empty_cell_character();
+
+	for (int i = 0; i < BOARD_SIZE; ++i)
+	{
+		if (i % BOX_SIZE == 0 && i != 0)
+		{
+			std::string s1 = "---";
+			std::string s2 = s1 * BOX_SIZE + " + ";
+            out << s2 * (BOX_SIZE - 1) << s1 * BOX_SIZE << "\n";
+		}
+
+        for (int j = 0; j < BOARD_SIZE; ++j)
+		{
+			if (j % BOX_SIZE == 0 && j != 0)
+			{
+                out << "  | ";
+			}	
+
+			std::string forPrinting = (grid[i][j] == EMPTY_CELL_VALUE) ? EMPTY_CELL_CHARACTER : std::to_string(grid[i][j]);
+
+            if (j == BOARD_SIZE - 1)
+			{
+                out << std::setfill(' ') << std::setw(2) << forPrinting << "\n";
+			}
+			else if (j % BOX_SIZE == BOX_SIZE - 1)
+			{
+				out << std::setfill(' ') << std::setw(2) << forPrinting;
+			}
+			else
+			{
+                out << std::setfill(' ') << std::setw(2) << forPrinting << " ";
+			}
+		}
+	}
+
+    return out;
+}
