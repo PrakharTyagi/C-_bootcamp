@@ -1,7 +1,4 @@
-#[[
-This CMakeLists.txt file contains the instruction to compile
-A brute-force Sudoku solver written by bryanesmith
-]]
+
 
 cmake_minimum_required(VERSION 3.7)
 
