@@ -26,6 +26,7 @@ std::unique_ptr<SudokuPuzzle> CreateSudokuSolver(MODES mode, SudokuBoard& board)
 
 int main (int argc, char** const argv) {
 
+int WRITE_TO_SOLUTION_TXT = 0;
 
 std::chrono::high_resolution_clock::time_point start, stop;
 start = std::chrono::high_resolution_clock::now();
@@ -79,6 +80,19 @@ solver->solve();
 
 stop = std::chrono::high_resolution_clock::now();
 int time_in_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+
+
+// Assume all input Sudoku boards are solvable
+	std::cout << "\n" << termcolor::green << "SOLVED!" << termcolor::reset << "\n";
+	SudokuTest::testBoard(solver->get_solution());
+	std::cout << termcolor::magenta << "************************************* OUTPUT GRID ************************************" << termcolor::reset << "\n\n";
+	print_board(solver->get_solution());
+	if (WRITE_TO_SOLUTION_TXT) {
+		write_output(solver->get_solution());
+	}
+	std::cout << "\n" << termcolor::magenta << "**************************************************************************************" << termcolor::reset << "\n";
+
+
 
 	
 	std::cout << std::endl;

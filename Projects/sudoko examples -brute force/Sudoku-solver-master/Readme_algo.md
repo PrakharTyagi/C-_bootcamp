@@ -1,3 +1,19 @@
+to run the 
+stand in the rep give command make
+then after build
+
+
+run ./sudoku_main inputfile location/filename.txt mode
+mode 0: seq back tracking
+
+example :./sudoku_main Test/Easy.txt 0
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------
 1 Introduction
 1.1 What is Sudoku?
 
